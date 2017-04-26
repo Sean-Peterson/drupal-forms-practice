@@ -1,0 +1,5 @@
+name = Sum Form
+description = Practice form one
+package = Form Practice
+core = 7.x
+files[] = form_one.module

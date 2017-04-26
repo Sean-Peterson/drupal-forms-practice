@@ -1,0 +1,69 @@
+<?php
+function ping_pong_menu() {
+    $items['ping_pong'] = array(
+        'title' => 'Ping it up',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('ping_pong_form'),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+    );
+    $items['ping_pong/result'] = array(
+        'title' => "Isn't this fun?",
+        'page callback' => 'ping_pong_result',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function ping_pong_form(){
+    $form['user_number']=array(
+        '#title'=>'Input a number and see it transform into PINGPONG',
+        '#type'=>'textfield',
+        '#description'=>t('This number will be displayed one number at a time and every number divisible by 3, 5, and 15 will be replaced by ping, pong, and ping-pong respectively.'),
+        '#required'=>TRUE,
+        '#element_validate'=>array(
+            'element_validate_number',
+             'element_validate_range'
+         ),
+
+    );
+    $form['submit']=array(
+        '#type'=>'submit',
+        '#value'=>'Submit',
+    );
+    return $form;
+}
+
+function element_validate_range($element) {
+    if($element['#value']>50||$element['#value']<-50){
+        form_error($element, t('Number must be less than 50 and greater than -50'));
+    }
+}
+
+function ping_pong_form_submit($form, &$form_state){
+    $number = $form_state['values']['user_number'];
+    $pong_array = array();
+    for($i=1;$i<=$number;$i++){
+        if($i%15==0){
+            array_push($pong_array, 'ping pong');
+        }elseif($i%3==0){
+            array_push($pong_array, 'ping');
+        }elseif($i%5==0){
+            array_push($pong_array, 'pong');
+        }else{
+            array_push($pong_array, $i);
+        }
+    }
+    $_SESSION['result'] = $pong_array;
+    $form_state['redirect'] = 'ping_pong/result';
+}
+
+function ping_pong_result(){
+    $begin = '<ul>';
+    foreach ($_SESSION['result'] as $number) {
+        $begin .= '<li>'.$number.'</li>';
+    }
+    $begin.= '</ul>';
+    return $begin;
+}

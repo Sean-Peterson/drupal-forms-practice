@@ -1,0 +1,5 @@
+name = Funny Word Form
+description = Practice form two
+package = Form Practice
+core = 7.x
+files[] = funny_word.module

@@ -1,0 +1,65 @@
+<?php
+function funny_word_menu() {
+    $items['funny_word'] = array(
+        'title' => 'Make a funny word',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('funny_word_form'),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+    );
+    $items['funny_word/imagined'] = array(
+        'title' => 'Can youe believe that?',
+        'page callback' => 'imagined_word',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function funny_word_form() {
+    $form['word_one'] = array(
+        '#title' => 'Word One',
+        '#type' => 'textfield',
+        '#description' => 'See how this word interacts with your second word',
+        '#element_validate'=>array(
+            'element_validate_p'
+        ),
+        '#required'=>TRUE,
+    );
+    $form['word_two'] = array(
+        '#title' => 'Word Two',
+        '#type' => 'textfield',
+        '#description' => 'See how this word interacts with your first word',
+        '#required'=>TRUE,
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'GO',
+    );
+    return $form;
+}
+
+function funny_word_form_submit($form, &$form_state) {
+    $word_one = $form_state['values']['word_one'];
+    $word_two = $form_state['values']['word_two'];
+    $result = $word_one . 'pineapple' . $word_two;
+    $_SESSION['imagined'] = $result;
+    $form_state['redirect'] = 'funny_word/imagined';
+}
+
+function imagined_word() {
+    return "Can you believe this word?? LMAO =>>> " . $_SESSION['imagined'];
+}
+
+function element_validate_p($element) {
+    $split_word = str_split($element['#value']);
+    $passes = FALSE;
+    for($i=0;$i<sizeof($split_word);$i++){
+        if($split_word[$i]=='p'){
+            $passes = TRUE;
+        }
+    }
+    if($passes == FALSE){
+        form_error($element, "Your first word must contain a 'p'");
+    }
+}
